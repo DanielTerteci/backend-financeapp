@@ -1,29 +1,33 @@
 package com.finance.app.security;
 
-import com.finance.app.filter.JwtAuthFilter;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableWebSecurity
 @Configuration
-@RequiredArgsConstructor
 public class SecurityConfig {
-    private final UserDetailsService userDetailsService;
-    private final JwtAuthFilter jwtAuthFilter;
+    private final CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public static PasswordEncoder passwordEncoder(){
@@ -32,29 +36,48 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-            .cors(AbstractHttpConfigurer::disable)
-            .authorizeRequests(auth -> auth
-                    .requestMatchers("/login/**", "/register/**", "/css/**", "/js/**", "/swagger-ui/**", "/api-docs/**").permitAll()
-                    .anyRequest()
-                    .authenticated())
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and().authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
+                .authorizeRequests(auth -> auth
+                        .requestMatchers("/login/**", "/register/**", "/css/**", "/js/**").permitAll()
+                        .anyRequest()
+                        .authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/home")
+                        .loginProcessingUrl("/login")
+                        .failureUrl("/login?error=true")
+                        .permitAll()
+                ).logout(
+                        logout -> logout
+                                .logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll()
+                );
+//                .httpBasic().and()
+//                .sessionManagement((session) -> session
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                );
+
         return http.build();
     }
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return authenticationProvider;
+//    @Bean
+//    public UserDetailsService users(){
+//        UserDetails admin = User.builder()
+//                .username("admin")
+//                .password("password")
+//                .roles("ADMIN")
+//                .build();
+//        UserDetails user =User.builder()
+//                .username("user")
+//                .password("password")
+//                .roles("USER")
+//                .build();
+//        return new InMemoryUserDetailsManager(admin,user);
+//    }
 
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public void configure(AuthenticationManagerBuilder builder) throws Exception {
+        builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 }

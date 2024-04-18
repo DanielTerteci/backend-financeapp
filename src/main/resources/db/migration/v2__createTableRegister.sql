@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS users_table (
+CREATE TABLE users_table (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(255) UNIQUE,
     email VARCHAR(255) UNIQUE,
