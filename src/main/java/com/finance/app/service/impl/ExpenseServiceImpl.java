@@ -18,10 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.finance.app.enums.CategoryType.expense;
-import static com.finance.app.mapper.CategoryMapper.mapToCategoryDto;
-import static com.finance.app.mapper.ExpenseMapper.mapToExpenseDto;
-
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
     @Autowired
@@ -68,7 +64,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public List<ExpenseDto> findAllExpenses() {
         List<Expense> expense = expenseRepository.findAll();
-        return expense.stream().map((expense1 -> mapToExpenseDto(expense1))).collect(Collectors.toList());
+        return expense.stream().map((ExpenseMapper::mapToExpenseDto)).collect(Collectors.toList());
     }
 
 }
