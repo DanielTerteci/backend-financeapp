@@ -34,12 +34,11 @@ public class LoginController {
 
         if (loginResult.isPresent()) {
             Register user = loginResult.get();
-            String userId = String.valueOf(user.getId()); // Conversie la String
+            String userId = String.valueOf(user.getId());
             String token = jwtTokenProvider.generateToken(userId, username);
 
-            return ResponseEntity.ok("login successfully:\n " + token);
+            return ResponseEntity.ok(token);
         } else {
-            // Autentificare eșuată
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }

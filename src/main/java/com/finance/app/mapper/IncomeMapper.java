@@ -3,6 +3,7 @@ package com.finance.app.mapper;
 import com.finance.app.dto.IncomeDto;
 import com.finance.app.models.Income;
 import com.finance.app.models.Register;
+import org.springframework.security.core.userdetails.User;
 
 import static com.finance.app.mapper.CategoryMapper.mapToCategoryDto;
 
@@ -15,7 +16,8 @@ public class IncomeMapper {
                 .price(income.getPrice())
                 .category(mapToCategoryDto(income.getCategory()))
                 .incomeDate(income.getIncomeDate())
-                .userId(income.getUserId() != null ? income.getUserId().getId() : null)
+                .username(income.getUserId().getUsername())
+                .email(income.getUserId().getEmail())
                 .createdOn(income.getCreatedOn())
                 .updatedOn(income.getUpdatedOn())
                 .build();
@@ -29,7 +31,7 @@ public class IncomeMapper {
                 .isRecurrent(incomeDto.getIsRecurrent())
                 .price(incomeDto.getPrice())
                 .incomeDate(incomeDto.getIncomeDate())
-                .userId(Register.builder().id(incomeDto.getUserId()).build())
+                .userId(Register.builder().username(incomeDto.getUsername()).email(incomeDto.getEmail()).build())
                 .createdOn(incomeDto.getCreatedOn())
                 .updatedOn(incomeDto.getUpdatedOn())
                 .build();

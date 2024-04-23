@@ -4,6 +4,7 @@ import com.finance.app.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -35,7 +36,8 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .cors(AbstractHttpConfigurer::disable)
             .authorizeRequests(auth -> auth
-                    .requestMatchers("/login/**", "/register/**", "/css/**", "/js/**", "/swagger-ui/**", "/api-docs/**").permitAll()
+                    .requestMatchers("/login/**","/register/**", "/css/**", "/js/**", "/swagger-ui/**", "/api-docs/**").permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .anyRequest()
                     .authenticated())
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

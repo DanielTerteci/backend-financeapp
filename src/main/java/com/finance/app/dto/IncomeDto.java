@@ -22,6 +22,8 @@ public class IncomeDto {
     private CategoryDto category;
     private LocalDate incomeDate;
     private Integer userId;
+    private String username;
+    private String email;
     private LocalDateTime createdOn;
     private LocalDateTime updatedOn;
 }

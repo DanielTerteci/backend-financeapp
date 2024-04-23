@@ -37,7 +37,7 @@ public class Register {
     @Size(min = 8, message = "Password must be at least 8 characters long")
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[!@#$%^&*()-_=+{};:',<.>/?]).*$",
             message = "Password must contain at least one capital letter and one symbol")
-    @NotBlank
+//    @NotBlank
     private String password;
 
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
