@@ -31,10 +31,10 @@ public class Income {
     private Category category;
     private LocalDate incomeDate;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+//    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
-    private Register userId;
+//    @JsonBackReference
+    private int userId;
 
     @CreationTimestamp
     private LocalDateTime createdOn;

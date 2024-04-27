@@ -4,6 +4,7 @@ import com.finance.app.dto.ExpenseDto;
 import com.finance.app.dto.IncomeDto;
 import com.finance.app.models.Expense;
 import com.finance.app.models.Income;
+import com.finance.app.security.JwtTokenProvider;
 import com.finance.app.service.IncomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,12 @@ import java.util.List;
 @RequestMapping("/income")
 public class IncomeController {
     private IncomeService incomeService;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public IncomeController(IncomeService incomeService) {
+    public IncomeController(IncomeService incomeService, JwtTokenProvider jwtTokenProvider) {
         this.incomeService = incomeService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @GetMapping("/getIncome/{incomeId}")
@@ -34,7 +37,9 @@ public class IncomeController {
         return ResponseEntity.ok(incomes);
     }
     @PostMapping("/saveWithCategory/{categoryId}")
-    public ResponseEntity<IncomeDto> saveIncomeWithCategory(@PathVariable int categoryId, @RequestBody IncomeDto incomeDto) {
+    public ResponseEntity<IncomeDto> saveIncomeWithCategory(@PathVariable int categoryId, @RequestBody IncomeDto incomeDto,@RequestHeader("Authorization") String token) {
+        Long userId = jwtTokenProvider.getUserIdFromToken(token.split(" ")[1]);
+        incomeDto.setUserId(userId.intValue());
         IncomeDto savedIncomes = incomeService.saveIncomeWithCategory(categoryId,incomeDto);
         return ResponseEntity.ok(savedIncomes);
     }

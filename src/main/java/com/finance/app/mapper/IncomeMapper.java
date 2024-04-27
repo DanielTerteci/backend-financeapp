@@ -16,8 +16,8 @@ public class IncomeMapper {
                 .price(income.getPrice())
                 .category(mapToCategoryDto(income.getCategory()))
                 .incomeDate(income.getIncomeDate())
-                .username(income.getUserId().getUsername())
-                .email(income.getUserId().getEmail())
+//                .username(income.getUserId().getUsername())
+//                .email(income.getUserId().getEmail())
                 .createdOn(income.getCreatedOn())
                 .updatedOn(income.getUpdatedOn())
                 .build();
@@ -25,16 +25,15 @@ public class IncomeMapper {
     }
 
     public static Income mapToIncome(IncomeDto incomeDto) {
-        Income income = Income.builder()
+        return Income.builder()
                 .id(incomeDto.getId())
                 .currency(incomeDto.getCurrency())
                 .isRecurrent(incomeDto.getIsRecurrent())
                 .price(incomeDto.getPrice())
                 .incomeDate(incomeDto.getIncomeDate())
-                .userId(Register.builder().username(incomeDto.getUsername()).email(incomeDto.getEmail()).build())
+                .userId(incomeDto.getUserId())
                 .createdOn(incomeDto.getCreatedOn())
                 .updatedOn(incomeDto.getUpdatedOn())
                 .build();
-        return income;
     }
 }

@@ -1,5 +1,6 @@
 package com.finance.app.security;
 
+import com.nimbusds.jwt.JWTParser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -8,12 +9,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.security.SecureRandom;
+import java.text.ParseException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
 @Component
 public class JwtTokenProvider {
-    public static final String COMMON_SECRET_KEY = "oA9FhWkZp3s6v9y$B&E)H@McQfTjWnZr";
+    public static final String COMMON_SECRET_KEY = "oA9FhWkZp3s6v9y$B&E)H@McQfTjWnZr"; // todo generate at app start
 
     public String generateToken(String userId, String username) {
         var secretKey = generateSecretKeyForUser(userId);
@@ -37,12 +41,25 @@ public class JwtTokenProvider {
         return extractClaim(token, Claims::getExpiration);
     }
 
+
+    //TODO -- DE FOLOSIT IN CONTINUARE -- TREBUIE FACUTA O METODA CARE SALVEAZA ID-UL USERULUI IN BAZA DE DATE EXTRAGAND USER ID DIN TOKEN
+    //TODO -- DE REFACUT TABELA PENTRU INCOME
+    public String extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("userId", String.class));
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
     private Claims extractAllClaims(String token) {
+//        try {
+//            var a = token.startsWith("Bearer") ? token.split(" ")[1] : token;
+//            return Jwts.claims(JWTParser.parse(a).getJWTClaimsSet().getClaims());
+//        } catch (ParseException e) {
+//            throw new RuntimeException(e);
+//        }
         return Jwts
                 .parserBuilder()
                 .setSigningKey(generateSecretKeyForUser("")) // TODO
@@ -62,7 +79,11 @@ public class JwtTokenProvider {
 
 
     private Key generateSecretKeyForUser(String userId) {
-        // TODO
         return Keys.hmacShaKeyFor(COMMON_SECRET_KEY.getBytes());
+    }
+
+    public Long getUserIdFromToken(String token) {
+        token = token.trim();
+        return Long.parseLong(extractUserId(token));
     }
 }
