@@ -17,7 +17,7 @@ import java.util.function.Function;
 
 @Component
 public class JwtTokenProvider {
-    public static final String COMMON_SECRET_KEY = "oA9FhWkZp3s6v9y$B&E)H@McQfTjWnZr"; // todo generate at app start
+    public static final String COMMON_SECRET_KEY = "oA9FhWkZp3s6v9y$B&E)H@McQfTjWnZr"; // TODO generate at app start
 
     public String generateToken(String userId, String username) {
         var secretKey = generateSecretKeyForUser(userId);
@@ -41,9 +41,6 @@ public class JwtTokenProvider {
         return extractClaim(token, Claims::getExpiration);
     }
 
-
-    //TODO -- DE FOLOSIT IN CONTINUARE -- TREBUIE FACUTA O METODA CARE SALVEAZA ID-UL USERULUI IN BAZA DE DATE EXTRAGAND USER ID DIN TOKEN
-    //TODO -- DE REFACUT TABELA PENTRU INCOME
     public String extractUserId(String token) {
         return extractClaim(token, claims -> claims.get("userId", String.class));
     }
@@ -62,7 +59,7 @@ public class JwtTokenProvider {
 //        }
         return Jwts
                 .parserBuilder()
-                .setSigningKey(generateSecretKeyForUser("")) // TODO
+                .setSigningKey(generateSecretKeyForUser(""))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
