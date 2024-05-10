@@ -1,6 +1,5 @@
 package com.finance.app.security;
 
-import com.nimbusds.jwt.JWTParser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -9,9 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.security.SecureRandom;
-import java.text.ParseException;
-import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -51,12 +47,6 @@ public class JwtTokenProvider {
     }
 
     private Claims extractAllClaims(String token) {
-//        try {
-//            var a = token.startsWith("Bearer") ? token.split(" ")[1] : token;
-//            return Jwts.claims(JWTParser.parse(a).getJWTClaimsSet().getClaims());
-//        } catch (ParseException e) {
-//            throw new RuntimeException(e);
-//        }
         return Jwts
                 .parserBuilder()
                 .setSigningKey(generateSecretKeyForUser(""))
